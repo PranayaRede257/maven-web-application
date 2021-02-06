@@ -1,22 +1,10 @@
 pipeline{
 
 agent any
-
 tools
 {
-  maven 'maven3.6.3'
-
+    maven 'maven3.6.3'
 }
-
-triggers{
- pollSCM('* * * * *')
-}
-
-options{
-    timestamps()
-    buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '2', daysToKeepStr: '', numToKeepStr: '2'))
-}
-
  stages{
    
    stage('CheckoutCode')
@@ -32,7 +20,6 @@ options{
 	  sh "mvn clean package"
 	 }
    }
-   
     stage('ExecuteSonarQubeReport')
    {
      steps{
@@ -46,38 +33,31 @@ options{
 	  sh "mvn deploy"
 	 }
    }
-   
-  stage('DeployAppIntoTomcat')
+    stage('DeployAppIntoTomcat')
  {
    steps{
-  sshagent(['2b7b0c6a-5eff-4f4a-82c3-3630f91c70b5']) {
-  sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@3.1.222.74:/opt/apache-tomcat-9.0.41/webapps/"
+  sshagent(['8ee6db12-b465-4fdf-8485-2b1069e4ce41']) {
+  sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@52.66.179.48:/opt/apache-tomcat-9.0.41/webapps/"
   }
  }
  }
- 
-  
- 
  }
- 
  post{
  
  
  success{
- mail bcc: 'pranayareddy1995@gmail.com', body: '''BuildOver!....
+ mail bcc: '', body: '''Build Over
 
- Regards,
- Mithun Technologies,
- 9980923226''', cc: 'pranayareddy1995@gmail.com', from: '', replyTo: '', subject: 'BuildOver!!', to: 'pranayareddy1995@gmail.com'
+Regards,
+Pranaya''', cc: '', from: '', replyTo: '', subject: 'Build Over', to: 'pranayareddy1995@gmail.com'
  }
  
  failure{
- mail bcc: 'pranayareddy1995@gmail.com', body: '''BuildOver!....
+mail bcc: '', body: '''Build Over
 
- Regards,
- Mithun Technologies,
- 9980923226''', cc: 'pranayareddy1995@gmail.com', from: '', replyTo: '', subject: 'BuildOver!!', to: 'pranayareddy1995@gmail.com'
+Regards,
+Pranaya''', cc: '', from: '', replyTo: '', subject: 'Build Over', to: 'pranayareddy1995@gmail.com'
  }
  
- }
+}
 }
